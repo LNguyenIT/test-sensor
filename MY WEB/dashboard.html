@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Dashboard Cảm Biến</h1>
+      <nav>
+        <a href="index.html">Trang Chủ</a>
+        <a href="logout.html">Đăng Xuất</a>
+      </nav>
+    </header>
+    <main>
+      <h2>Dữ liệu cảm biến</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Thời gian</th>
+            <th>Giá trị cảm biến</th>
+          </tr>
+        </thead>
+        <tbody id="sensorData">
+          <!-- Dữ liệu sẽ được điền vào đây từ JavaScript -->
+        </tbody>
+      </table>
+    </main>
+    <footer>
+      <p>&copy; 2024 Website Cảm Biến</p>
+    </footer>
+
+    <!--ĐÂY LÀ ĐOẠN MÃ T BẮT THỜI GIAN THỰC M CÓ THỂ KHÔNG LÀM NẾU KHÔNG CẦN-->
+    <script>
+      // Gọi API để lấy dữ liệu cảm biến và cập nhật bảng
+      async function fetchSensorData() {
+        try {
+          const response = await fetch("http://localhost:5000/api/sensors"); // Thay thế URL với API của bạn
+          const data = await response.json();
+
+          const sensorDataTable = document.getElementById("sensorData");
+
+          // Xóa dữ liệu cũ trong bảng
+          sensorDataTable.innerHTML = "";
+
+          // Duyệt qua từng dữ liệu cảm biến và thêm vào bảng
+          data.forEach((sensor) => {
+            const row = document.createElement("tr");
+            const timeCell = document.createElement("td");
+            const valueCell = document.createElement("td");
+
+            timeCell.textContent = sensor.time; // Giả sử dữ liệu có trường 'time'
+            valueCell.textContent = sensor.value + "°C"; // Giả sử dữ liệu có trường 'value'
+
+            row.appendChild(timeCell);
+            row.appendChild(valueCell);
+
+            sensorDataTable.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Lỗi khi lấy dữ liệu cảm biến:", error);
+        }
+      }
+
+      // Gọi hàm fetchSensorData khi trang được tải
+      window.onload = fetchSensorData;
+    </script>
+  </body>
+</html>
