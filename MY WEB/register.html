@@ -27,7 +27,12 @@
 
         <button type="submit">Đăng Ký</button>
       </form>
+
+      <!-- Thông báo lỗi hoặc thành công sẽ hiển thị ở đây -->
+      <div id="error-message" style="color: red;"></div>
+      <div id="success-message" style="color: green;"></div>
     </main>
+
     <footer>
       <p>&copy; 2024 Website Cảm Biến</p>
     </footer>
@@ -38,6 +43,7 @@
         .addEventListener("submit", async function (event) {
           event.preventDefault(); // Ngăn chặn hành vi mặc định
 
+          const username = document.getElementById("username").value;
           const email = document.getElementById("email").value;
           const password = document.getElementById("password").value;
 
@@ -45,25 +51,33 @@
             const response = await fetch(
               "http://localhost:5000/api/auth/register",
               {
-                // sửa lại cái cổng theo đúng cổng đang xài
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ username, email, password }), // Gửi thêm username
               }
             );
 
             const data = await response.json();
+
             if (response.ok) {
-              alert(data.message); // Thông báo thành công
-              window.location.href = "login.html"; // Chuyển hướng tới trang đăng nhập
+              // Hiển thị thông báo thành công
+              document.getElementById("success-message").innerText = data.message || "Đăng ký thành công!";
+              document.getElementById("error-message").innerText = "";
+              // Chuyển hướng tới trang đăng nhập sau khi đăng ký thành công
+              setTimeout(() => {
+                window.location.href = "login.html";
+              }, 2000); // Thời gian đợi trước khi chuyển hướng
             } else {
-              alert(data.message); // Thông báo lỗi từ server
+              // Hiển thị thông báo lỗi
+              document.getElementById("error-message").innerText = data.message || "Đã xảy ra lỗi!";
+              document.getElementById("success-message").innerText = "";
             }
           } catch (error) {
             console.error("Lỗi:", error);
-            alert("Đã xảy ra lỗi. Vui lòng thử lại!");
+            document.getElementById("error-message").innerText = "Đã xảy ra lỗi. Vui lòng thử lại!";
+            document.getElementById("success-message").innerText = "";
           }
         });
     </script>

@@ -24,9 +24,69 @@
 
         <button type="submit">Đăng Nhập</button>
       </form>
+
+      <!-- Thông báo lỗi hoặc thành công sẽ hiển thị ở đây -->
+      <div id="error-message" style="color: red;"></div>
+      <div id="success-message" style="color: green;"></div>
     </main>
     <footer>
       <p>&copy; 2024 Website Cảm Biến</p>
     </footer>
+
+    <script>
+      // Hàm để gửi yêu cầu đăng nhập tới server
+      async function loginUser(username, password) {
+        try {
+          const response = await fetch("http://localhost:5000/api/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: username,
+              password: password,
+            }),
+          });
+
+          const data = await response.json();
+          
+          // Kiểm tra nếu đăng nhập thành công
+          if (response.status === 200) {
+            // Hiển thị thông báo thành công
+            document.getElementById("success-message").innerText = "Đăng nhập thành công!";
+            document.getElementById("error-message").innerText = "";
+            // Bạn có thể lưu token JWT ở đây nếu muốn duy trì phiên
+            localStorage.setItem("token", data.token); // Lưu token vào localStorage
+            // Chuyển hướng đến trang dashboard hoặc trang chính
+            window.location.href = "dashboard.html";
+          } else {
+            // Hiển thị thông báo lỗi
+            document.getElementById("error-message").innerText = data.message || "Lỗi đăng nhập!";
+            document.getElementById("success-message").innerText = "";
+          }
+        } catch (error) {
+          console.error("Lỗi khi đăng nhập:", error);
+          document.getElementById("error-message").innerText = "Đã xảy ra lỗi! Vui lòng thử lại.";
+        }
+      }
+
+      // Lắng nghe sự kiện gửi form
+      document.getElementById("loginForm").addEventListener("submit", function (e) {
+        e.preventDefault(); // Ngừng hành động mặc định của form
+
+        // Lấy giá trị người dùng nhập vào
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        // Kiểm tra các trường nhập
+        if (username === "" || password === "") {
+          document.getElementById("error-message").innerText = "Vui lòng nhập đủ thông tin!";
+          return;
+        }
+
+        // Gọi hàm đăng nhập
+        loginUser(username, password);
+      });
+    </script>
   </body>
 </html>
